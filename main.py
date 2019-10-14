@@ -103,17 +103,31 @@ languages = [
   ]
 
 
-def textSpinUsingTranslate(text='Type in anything that you want. Then click the button on the right to paraphrase your input.', spinTimes=10):
+def textSpinUsingTranslate(text='Type in anything that you want. Then click the button on the right to paraphrase your input.', spinTimes=10, arrayTexts=None):
+  translator = Translator()
   random.shuffle(languages) # shuffle langs
   Langs = languages[0:spinTimes]
-  
   newInputTxt = text
+  
+  inputTexts = [newInputTxt]
+  
+  if arrayTexts != None:
+    inputTexts = arrayTexts # allows arrays also
+    
   for i in range(len(Langs)):
-    translations = translator.translate([newInputTxt], dest=Langs[i])
-    for translation in translations:
-      newInputTxt = translation.text
-      if i == len(Langs) - 1:
-        return translator.translate([newInputTxt], dest='en')[0].text
+    destLang = Langs[i]
+    if i == len(Langs) - 1:
+      destLang = 'en'
+      
+    translations = translator.translate(inputTexts, dest=destLang)      
+    for x in range(len(translations)):
+      translation = translations[x]
+      if x == 0:
+        inputTexts = [] # clear array
+      inputTexts.append(translation.text)
+    if i == len(Langs) - 1:
+      return inputTexts
+        
 
 result = textSpinUsingTranslate(spinTimes=5)
 print(result)
